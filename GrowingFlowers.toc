@@ -1,0 +1,9 @@
+## Interface: 11200
+## Author: smnbck
+## Title: GrowingFlowers
+## Notes: Handy frame for displaying the leveling guides made by Brian and Joana
+## Version: 0.1
+## SavedVariablesPerCharacter: gfCurrentInstructionID
+GrowingFlowers_InstructionAlliance.lua
+GrowingFlowers.lua
+GrowingFlowers.xml

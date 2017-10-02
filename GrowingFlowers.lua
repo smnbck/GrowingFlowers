@@ -6,23 +6,10 @@ local nextButton
 local currentInstructionID = 1
 local GrowingFlowers_Frame
 
--- function GrowingFlowers_OnLoad()
---   DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers loaded! Current Instruction ID: " .. currentInstructionID);
--- end
-
 function GrowingFlowers:registerEvents()
   GrowingFlowers_Frame = getglobal("GrowingFlowers_Frame")
   GrowingFlowers_Frame:RegisterEvent("ADDON_LOADED")
   GrowingFlowers_Frame:RegisterEvent("PLAYER_LOGOUT");
-
-  -- GrowingFlowers_Frame:SetScript("OnEvent", function(event)
-  --   if event == "ADDON_LOADED" then
-  --     DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers OnEvent called! Event = " .. event);
-  --   end
-  --
-  --   DEFAULT_CHAT_FRAME:AddMessage("Event called");
-  --
-  -- end)
 end
 
 function GrowingFlowers:OnEvent(event)
@@ -33,7 +20,7 @@ function GrowingFlowers:OnEvent(event)
     end
 
     currentInstructionID = gfCurrentInstructionID
-
+    GrowingFlowers:setInstructionTexts()
     DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers loaded! Current ID is " .. currentInstructionID);
 
   elseif (event == "PLAYER_LOGOUT") then
@@ -67,7 +54,7 @@ end
 function GrowingFlowers:setInstructionTexts()
   -- check if instructionID has allready a save state
   instructions = GrowingFlowers_InstructionsAlliance:getInstructions()
-  GrowingFlowers:switchInstructionButtonPressed()
+  GrowingFlowers:switchInstructionButtonPressed("none")
 end
 
 function GrowingFlowers:switchInstructionButtonPressed(direction)

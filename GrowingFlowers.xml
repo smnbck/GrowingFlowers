@@ -230,12 +230,11 @@
     <Scripts>
 
       <OnLoad>
+        GrowingFlowers:registerEvents();
         GrowingFlowers:configureTexts();
         GrowingFlowers:addPreviousButton();
         GrowingFlowers:addNextButton();
-        GrowingFlowers:setInstructionTexts()
         GrowingFlowers:registerSlashCommands()
-        GrowingFlowers:registerEvents();
       </OnLoad>
 
       <OnEvent> GrowingFlowers:OnEvent(event);	</OnEvent>

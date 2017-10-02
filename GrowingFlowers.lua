@@ -1,6 +1,7 @@
 GrowingFlowers = {};
 
 local instructions = {}
+local instructionsTitle = ""
 local previousButton
 local nextButton
 local currentInstructionID = 1
@@ -20,7 +21,7 @@ function GrowingFlowers:OnEvent(event)
     end
 
     currentInstructionID = gfCurrentInstructionID
-    GrowingFlowers:setInstructionTexts()
+    GrowingFlowers:initInstructionTexts()
     DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers loaded! Current ID is " .. currentInstructionID);
 
   elseif (event == "PLAYER_LOGOUT") then
@@ -51,9 +52,10 @@ function GrowingFlowers:configureTexts()
   currentInstructionText:SetTextColor(1, 0.76, 0.24, 1)
 end
 
-function GrowingFlowers:setInstructionTexts()
-  -- check if instructionID has allready a save state
-  instructions = GrowingFlowers_InstructionsAlliance:getInstructions()
+function GrowingFlowers:initInstructionTexts()
+  instructionsTitle = GrowingFlowers_Inst_Alliance_Nightelf:getInstructionsTitle()
+  instructions = GrowingFlowers_Inst_Alliance_Nightelf:getInstructions()
+
   GrowingFlowers:switchInstructionButtonPressed("none")
 end
 
@@ -96,10 +98,22 @@ function GrowingFlowers:switchInstructionButtonPressed(direction)
   end
 
   local levelRangeText = getglobal("GrowingFlowers_LevelRange")
-  local faction = "Alliance"
-  local race = "Nightelfs"
-  levelRangeText:SetText(faction .. " - " .. race .. ": Level "
-  .. instructions[currentInstructionID].minLvl .. " to " .. instructions[currentInstructionID].maxLvl)
+  levelRangeText:SetText(instructionsTitle)
+end
+
+function GrowingFlowers:addSettingsButton()
+  nextButton = CreateFrame("Button", GrowingFlowers_NextButton, GrowingFlowers_Frame)
+	nextButton:SetPoint("RIGHT", -8, 0)
+  nextButton:SetPoint("TOP", 0, -2)
+	nextButton:SetWidth(40)
+	nextButton:SetHeight(20)
+
+	nextButton:SetText("Settings")
+  nextButton:SetFont("Fonts\\ARIALN.TTF", 12)
+
+  nextButton:SetScript("OnClick", function(self, arg1)
+    GrowingFlowers:showSettings()
+  end)
 end
 
 function GrowingFlowers:addPreviousButton()

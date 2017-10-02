@@ -1,5 +1,7 @@
 
-GrowingFlowers_InstructionsAlliance = {};
+GrowingFlowers_Inst_Alliance_Nightelf = {};
+
+local instructionsTitle = "Alliance Nightelfs: Level 1-12"
 
 local instructions = {
   { text="If you purchased the Collector’s Edition Game, Right Click your Gift Voucher and start “Welcome!”", minLvl=1, maxLvl=12 },
@@ -97,6 +99,10 @@ local instructions = {
 
 }
 
-function GrowingFlowers_InstructionsAlliance:getInstructions()
+function GrowingFlowers_Inst_Alliance_Nightelf:getInstructions()
   return instructions
+end
+
+function GrowingFlowers_Inst_Alliance_Nightelf:getInstructionsTitle()
+  return instructionsTitle
 end

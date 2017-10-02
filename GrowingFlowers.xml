@@ -232,6 +232,7 @@
       <OnLoad>
         GrowingFlowers:registerEvents();
         GrowingFlowers:configureTexts();
+        GrowingFlowers:addSettingsButton();
         GrowingFlowers:addPreviousButton();
         GrowingFlowers:addNextButton();
         GrowingFlowers:registerSlashCommands()

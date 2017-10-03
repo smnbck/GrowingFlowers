@@ -1,7 +1,9 @@
 
-GrowingFlowers_Inst_Alliance_Nightelf = {};
+GrowingFlowers_Inst_Alliance_17_21 = {};
 
-local instructionsTitle = "Alliance Global - Level 17 to 21"
+local instructionsTitle = "Alliance - Level 17 to 21"
+
+local race = "Alliance"
 
 local instructions = {
   { text="Hearth back to Auberdine (if you’re not 17 yet you will be) turn in:", minLvl="17", maxLvl="17" },
@@ -77,10 +79,14 @@ local instructions = {
 
 }
 
-function GrowingFlowers_Inst_Alliance_Nightelf:getInstructions()
+function GrowingFlowers_Inst_Alliance_17_21:getInstructions()
   return instructions
 end
 
-function GrowingFlowers_Inst_Alliance_Nightelf:getInstructionsTitle()
+function GrowingFlowers_Inst_Alliance_17_21:getInstructionsTitle()
   return instructionsTitle
+end
+
+function GrowingFlowers_Inst_Alliance_17_21:getRace()
+  return race
 end

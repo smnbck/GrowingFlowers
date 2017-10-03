@@ -4,6 +4,7 @@ GrowingFlowers = {};
 
 local GrowingFlowers_Frame
 local currentInstructionID = 1
+local instructionsFile
 local instructions = {}
 local instructionsTitle = ""
 
@@ -61,9 +62,9 @@ function GrowingFlowers:configureTexts()
 end
 
 function GrowingFlowers:initInstructionTexts()
-  instructionsTitle = GrowingFlowers_Inst_Alliance_Nightelf:getInstructionsTitle()
-  instructions = GrowingFlowers_Inst_Alliance_Nightelf:getInstructions()
-
+  -- instructions = GrowingFlowers_Inst_Nightelfs:getInstructions()
+  instructionsFile = GrowingFlowers_Inst_Alliance_17_21
+  instructions = instructionsFile:getInstructions()
   GrowingFlowers:switchInstructionButtonPressed("none")
 end
 
@@ -106,7 +107,10 @@ function GrowingFlowers:switchInstructionButtonPressed(direction)
   end
 
   local levelRangeText = getglobal("GrowingFlowers_LevelRange")
+  local race = instructionsFile:getRace()
+  instructionsTitle = race .. " - Level " .. instructions[currentInstructionID].minLvl .. " to " .. instructions[currentInstructionID].maxLvl
   levelRangeText:SetText(instructionsTitle)
+
 end
 
 function GrowingFlowers:addSettingsButton()

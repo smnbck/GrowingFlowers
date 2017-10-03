@@ -1,12 +1,20 @@
+
+-- Stored Properties
 GrowingFlowers = {};
 
+local GrowingFlowers_Frame
+local currentInstructionID = 1
 local instructions = {}
 local instructionsTitle = ""
+
+local settingsButton
+local closeButton
 local previousButton
 local nextButton
-local currentInstructionID = 1
-local GrowingFlowers_Frame
 
+local settingsTexture
+
+-- Functions
 function GrowingFlowers:registerEvents()
   GrowingFlowers_Frame = getglobal("GrowingFlowers_Frame")
   GrowingFlowers_Frame:RegisterEvent("ADDON_LOADED")
@@ -102,17 +110,40 @@ function GrowingFlowers:switchInstructionButtonPressed(direction)
 end
 
 function GrowingFlowers:addSettingsButton()
-  nextButton = CreateFrame("Button", GrowingFlowers_NextButton, GrowingFlowers_Frame)
-	nextButton:SetPoint("RIGHT", -8, 0)
-  nextButton:SetPoint("TOP", 0, -2)
-	nextButton:SetWidth(40)
-	nextButton:SetHeight(20)
+  settingsButton = CreateFrame("Button", GrowingFlowers_settingsButton, GrowingFlowers_Frame)
+	settingsButton:SetPoint("LEFT", 8, 0)
+  settingsButton:SetPoint("TOP", 0, -7)
+	settingsButton:SetWidth(10)
+	settingsButton:SetHeight(10)
 
-	nextButton:SetText("Settings")
-  nextButton:SetFont("Fonts\\ARIALN.TTF", 12)
+  settingsButton:SetNormalTexture("Interface\\AddOns\\GrowingFlowers\\img\\settings_icon_white")
+  settingsButton:SetHighlightTexture("Interface\\AddOns\\GrowingFlowers\\img\\settings_icon_white")
+  settingsButton:SetPushedTexture("Interface\\AddOns\\GrowingFlowers\\img\\settings_icon_white")
 
-  nextButton:SetScript("OnClick", function(self, arg1)
-    GrowingFlowers:showSettings()
+	-- settingsButton:SetText("Settings")
+  settingsButton:SetFont("Fonts\\ARIALN.TTF", 12)
+
+  settingsButton:SetScript("OnClick", function(self, arg1)
+    GrowingFlowers:toggleSettings()
+  end)
+end
+
+function GrowingFlowers:addCloseButton()
+  closeButton = CreateFrame("Button", GrowingFlowers_closeButton, GrowingFlowers_Frame)
+	closeButton:SetPoint("RIGHT", -8, 0)
+  closeButton:SetPoint("TOP", 0, -8)
+	closeButton:SetWidth(8)
+	closeButton:SetHeight(8)
+
+  closeButton:SetNormalTexture("Interface\\AddOns\\GrowingFlowers\\img\\close_icon_white")
+  closeButton:SetHighlightTexture("Interface\\AddOns\\GrowingFlowers\\img\\close_icon_white")
+  closeButton:SetPushedTexture("Interface\\AddOns\\GrowingFlowers\\img\\close_icon_white")
+
+	-- closeButton:SetText("Settings")
+  closeButton:SetFont("Fonts\\ARIALN.TTF", 12)
+
+  closeButton:SetScript("OnClick", function(self, arg1)
+    GrowingFlowers:toggleFrame()
   end)
 end
 
@@ -146,7 +177,28 @@ function GrowingFlowers:addNextButton()
   end)
 end
 
-local function toggleFrame()
+function GrowingFlowers:toggleSettings()
+  local bottomBar = getglobal("GrowingFlowers_BottomBar")
+  local previousInstructionText = getglobal("GrowingFlowers_PreviousInstruction")
+  local currentInstructionText = getglobal("GrowingFlowers_CurrentInstruction")
+  local nextInstructionText = getglobal("GrowingFlowers_NextInstruction")
+  buttons = {nextButton,
+    previousButton,
+    bottomBar,
+    previousInstructionText,
+    currentInstructionText,
+    nextInstructionText}
+
+    for i, button in buttons do
+      if button:IsShown() then
+        button:Hide()
+      else
+        button:Show()
+      end
+    end
+end
+
+function GrowingFlowers:toggleFrame()
   local frame = getglobal("GrowingFlowers_Frame")
   if frame:IsShown() then
     frame:Hide()
@@ -158,6 +210,6 @@ end
 function GrowingFlowers:registerSlashCommands()
   SLASH_GROWINGFLOWERS1, SLASH_GROWINGFLOWERS2 = '/gftoggle', '/GrowingFlowerstoggle'
   function SlashCmdList.GROWINGFLOWERS(msg, editbox)
-   toggleFrame()
+    GrowingFlowers:toggleFrame()
   end
 end

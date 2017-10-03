@@ -233,6 +233,7 @@
         GrowingFlowers:registerEvents();
         GrowingFlowers:configureTexts();
         GrowingFlowers:addSettingsButton();
+        GrowingFlowers:addCloseButton();
         GrowingFlowers:addPreviousButton();
         GrowingFlowers:addNextButton();
         GrowingFlowers:registerSlashCommands()

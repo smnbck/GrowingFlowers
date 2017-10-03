@@ -14,7 +14,7 @@ local closeButton
 local previousButton
 local nextButton
 
-local settingsTexture
+local settingsScrollFrame
 
 
 -- Functions
@@ -52,10 +52,16 @@ end
 function GrowingFlowers:init()
   GrowingFlowers:addSettingsButton();
   GrowingFlowers:addCloseButton();
+
   GrowingFlowers:addPreviousButton();
   GrowingFlowers:addNextButton();
+
+  GrowingFlowers:addSettingsScrollFrame()
+
   GrowingFlowers:configureTexts()
+
   GrowingFlowers:initInstructionTexts()
+
   GrowingFlowers:registerSlashCommands()
 end
 
@@ -86,9 +92,8 @@ end
 
 function GrowingFlowers:initInstructionTexts()
 
-  -- TODO: implement loading of correct files by using the fileID
-  -- instructions = GrowingFlowers_Inst_Nightelfs:getInstructions()
-  instructionsFile = GrowingFlowers_Inst_Alliance_1
+  instructionsFile = GrowingFlowers_FileManager:getFileWithID(gfCurrentInstructionFileID)
+  instructionsFile = GrowingFlowers_FileManager:getFileWithID(201)
 
   instructions = instructionsFile:getInstructions()
   GrowingFlowers:switchInstructionButtonPressed("none")
@@ -105,7 +110,6 @@ function GrowingFlowers:addSettingsButton()
   settingsButton:SetHighlightTexture("Interface\\AddOns\\GrowingFlowers\\img\\settings_icon_white")
   settingsButton:SetPushedTexture("Interface\\AddOns\\GrowingFlowers\\img\\settings_icon_white")
 
-	-- settingsButton:SetText("Settings")
   settingsButton:SetFont("Fonts\\ARIALN.TTF", 12)
 
   settingsButton:SetScript("OnClick", function(self, arg1)
@@ -124,7 +128,6 @@ function GrowingFlowers:addCloseButton()
   closeButton:SetHighlightTexture("Interface\\AddOns\\GrowingFlowers\\img\\close_icon_white")
   closeButton:SetPushedTexture("Interface\\AddOns\\GrowingFlowers\\img\\close_icon_white")
 
-	-- closeButton:SetText("Settings")
   closeButton:SetFont("Fonts\\ARIALN.TTF", 12)
 
   closeButton:SetScript("OnClick", function(self, arg1)
@@ -148,6 +151,41 @@ function GrowingFlowers:addPreviousButton()
 end
 
 function GrowingFlowers:addNextButton()
+  nextButton = CreateFrame("Button", GrowingFlowers_NextButton, GrowingFlowers_Frame)
+	nextButton:SetPoint("RIGHT", -8, 0)
+  nextButton:SetPoint("BOTTOM", 0, 2)
+	nextButton:SetWidth(40)
+	nextButton:SetHeight(20)
+
+	nextButton:SetText("Next >")
+  nextButton:SetFont("Fonts\\ARIALN.TTF", 12)
+
+  nextButton:SetScript("OnClick", function(self, arg1)
+    GrowingFlowers:switchInstructionButtonPressed("next")
+  end)
+end
+
+function GrowingFlowers:addSettingsScrollFrame()
+  settingsScrollFrame = CreateFrame("ScrollFrame", Settings_ScrollFrame, GrowingFlowers_Frame)
+  settingsScrollFrame:Hide()
+  settingsScrollFrame:SetPoint("LEFT", 0, 0)
+  settingsScrollFrame:SetPoint("RIGHT", 0, 0)
+  settingsScrollFrame:SetPoint("BOTTOM", 0, 0)
+	settingsScrollFrame:SetHeight(236)
+
+  local texture = settingsScrollFrame:CreateTexture()
+  texture:SetAllPoints()
+  texture:SetTexture(1,1,1,1)
+  settingsScrollFrame.background = texture
+
+  -- generateInstructionSelectionRows()
+end
+
+-- local function generateInstructionSelectionRows()
+--   local files = GrowingFlowers_FileManager:getAllFiles()
+-- end
+
+function GrowingFlowers:addSelectInstructionsButton()
   nextButton = CreateFrame("Button", GrowingFlowers_NextButton, GrowingFlowers_Frame)
 	nextButton:SetPoint("RIGHT", -8, 0)
   nextButton:SetPoint("BOTTOM", 0, 2)
@@ -229,8 +267,10 @@ function GrowingFlowers:toggleSettings()
 
     if levelRangeText:GetText() == "Settings" then
       levelRangeText:SetText(instructionsTitle)
+      settingsScrollFrame:Hide()
     else
       levelRangeText:SetText("Settings")
+      settingsScrollFrame:Show()
     end
 
     for i, button in buttons do

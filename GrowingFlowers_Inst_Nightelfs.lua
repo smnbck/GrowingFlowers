@@ -1,6 +1,8 @@
 
 GrowingFlowers_Inst_Nightelfs = {};
 
+local fileID = 201
+
 local instructionsTitle = "Nightelfs - Level 1 to 12"
 
 local race = "Nightelfs"

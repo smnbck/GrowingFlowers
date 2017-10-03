@@ -1,7 +1,9 @@
 
-GrowingFlowers_Inst_Alliance_17_21 = {};
+GrowingFlowers_Inst_Alliance_2 = {};
 
-local instructionsTitle = "Alliance - Level 17 to 21"
+local fileID = 2
+
+local instructionsTitle = "Alliance Part " .. fileID .. " - Level 17 to 21"
 
 local race = "Alliance"
 
@@ -79,14 +81,14 @@ local instructions = {
 
 }
 
-function GrowingFlowers_Inst_Alliance_17_21:getInstructions()
+function GrowingFlowers_Inst_Alliance_2:getInstructions()
   return instructions
 end
 
-function GrowingFlowers_Inst_Alliance_17_21:getInstructionsTitle()
+function GrowingFlowers_Inst_Alliance_2:getInstructionsTitle()
   return instructionsTitle
 end
 
-function GrowingFlowers_Inst_Alliance_17_21:getRace()
+function GrowingFlowers_Inst_Alliance_2:getRace()
   return race
 end

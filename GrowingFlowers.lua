@@ -16,6 +16,7 @@ local nextButton
 
 local settingsTexture
 
+
 -- Functions
 function GrowingFlowers:registerEvents()
   GrowingFlowers_Frame = getglobal("GrowingFlowers_Frame")
@@ -23,9 +24,8 @@ function GrowingFlowers:registerEvents()
   GrowingFlowers_Frame:RegisterEvent("PLAYER_LOGOUT");
 end
 
-function GrowingFlowers:OnEvent(event)
-	if (event == "ADDON_LOADED") then
-
+function GrowingFlowers:OnEvent(this, event, arg1)
+	if (arg1 == "GrowingFlowers" and event == "ADDON_LOADED") then
     if gfCurrentInstructionID == nil then
       gfCurrentInstructionID = 1;
     end
@@ -37,16 +37,30 @@ function GrowingFlowers:OnEvent(event)
     currentInstructionID = gfCurrentInstructionID
     currentInstructionFileID = gfCurrentInstructionFileID
 
-    GrowingFlowers:initInstructionTexts()
+    GrowingFlowers:init()
 
     DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers loaded! File ID = " .. currentInstructionFileID .. ", Instruction ID = " .. currentInstructionID);
 
   elseif (event == "PLAYER_LOGOUT") then
     gfCurrentInstructionID = currentInstructionID
-    gfCurrentInstructionFileID = currentInstructionFileID
+    gfCurrentInstructionFileID = xurrentInstructionFileID
   end
 end
 
+
+-- Initializer Function
+function GrowingFlowers:init()
+  GrowingFlowers:addSettingsButton();
+  GrowingFlowers:addCloseButton();
+  GrowingFlowers:addPreviousButton();
+  GrowingFlowers:addNextButton();
+  GrowingFlowers:configureTexts()
+  GrowingFlowers:initInstructionTexts()
+  GrowingFlowers:registerSlashCommands()
+end
+
+
+-- Every function called in GrowingFlowers:init()
 function GrowingFlowers:configureTexts()
   local lvlRangeText = getglobal("GrowingFlowers_LevelRange")
 
@@ -74,55 +88,10 @@ function GrowingFlowers:initInstructionTexts()
 
   -- TODO: implement loading of correct files by using the fileID
   -- instructions = GrowingFlowers_Inst_Nightelfs:getInstructions()
-  instructionsFile = GrowingFlowers_Inst_Alliance_17_21
+  instructionsFile = GrowingFlowers_Inst_Alliance_1
 
   instructions = instructionsFile:getInstructions()
   GrowingFlowers:switchInstructionButtonPressed("none")
-end
-
-function GrowingFlowers:switchInstructionButtonPressed(direction)
-
-  if direction == "previous" then
-    currentInstructionID = currentInstructionID - 1
-  elseif direction == "next" then
-    currentInstructionID = currentInstructionID + 1
-  end
-
-  local previousInstructionText = getglobal("GrowingFlowers_PreviousInstruction")
-  local currentInstructionText = getglobal("GrowingFlowers_CurrentInstruction")
-  local nextInstructionText = getglobal("GrowingFlowers_NextInstruction")
-
-  if instructions[currentInstructionID-1] ~= nil then
-    previousInstructionText:SetText(instructions[currentInstructionID-1].text)
-    previousButton:SetAlpha(1)
-    previousButton:Enable()
-  else
-    previousInstructionText:SetText("")
-    previousButton:SetAlpha(0.3)
-    previousButton:Disable()
-  end
-
-  if instructions[currentInstructionID] ~= nil then
-    currentInstructionText:SetText(instructions[currentInstructionID].text)
-  else
-    currentInstructionText:SetText("")
-  end
-
-  if instructions[currentInstructionID+1] ~= nil then
-    nextInstructionText:SetText(instructions[currentInstructionID+1].text)
-    nextButton:SetAlpha(1)
-    nextButton:Enable()
-   else
-    nextInstructionText:SetText("")
-    nextButton:SetAlpha(0.3)
-    nextButton:Disable()
-  end
-
-  local levelRangeText = getglobal("GrowingFlowers_LevelRange")
-  local race = instructionsFile:getRace()
-  instructionsTitle = race .. " - Level " .. instructions[currentInstructionID].minLvl .. " to " .. instructions[currentInstructionID].maxLvl
-  levelRangeText:SetText(instructionsTitle)
-
 end
 
 function GrowingFlowers:addSettingsButton()
@@ -193,6 +162,58 @@ function GrowingFlowers:addNextButton()
   end)
 end
 
+function GrowingFlowers:registerSlashCommands()
+  SLASH_GROWINGFLOWERS1, SLASH_GROWINGFLOWERS2 = '/gftoggle', '/GrowingFlowerstoggle'
+  function SlashCmdList.GROWINGFLOWERS(msg, editbox)
+    GrowingFlowers:toggleFrame()
+  end
+end
+
+
+-- Button Functions
+function GrowingFlowers:switchInstructionButtonPressed(direction)
+  if direction == "previous" then
+    currentInstructionID = currentInstructionID - 1
+  elseif direction == "next" then
+    currentInstructionID = currentInstructionID + 1
+  end
+
+  local previousInstructionText = getglobal("GrowingFlowers_PreviousInstruction")
+  local currentInstructionText = getglobal("GrowingFlowers_CurrentInstruction")
+  local nextInstructionText = getglobal("GrowingFlowers_NextInstruction")
+
+  if instructions[currentInstructionID-1] ~= nil then
+    previousInstructionText:SetText(instructions[currentInstructionID-1].text)
+    previousButton:SetAlpha(1)
+    previousButton:Enable()
+  else
+    previousInstructionText:SetText("")
+    previousButton:SetAlpha(0.3)
+    previousButton:Disable()
+  end
+
+  if instructions[currentInstructionID] ~= nil then
+    currentInstructionText:SetText(instructions[currentInstructionID].text)
+  else
+    currentInstructionText:SetText("")
+  end
+
+  if instructions[currentInstructionID+1] ~= nil then
+    nextInstructionText:SetText(instructions[currentInstructionID+1].text)
+    nextButton:SetAlpha(1)
+    nextButton:Enable()
+   else
+    nextInstructionText:SetText("")
+    nextButton:SetAlpha(0.3)
+    nextButton:Disable()
+  end
+
+  local levelRangeText = getglobal("GrowingFlowers_LevelRange")
+  local race = instructionsFile:getRace()
+  instructionsTitle = race .. " - Level " .. instructions[currentInstructionID].minLvl .. " to " .. instructions[currentInstructionID].maxLvl
+  levelRangeText:SetText(instructionsTitle)
+end
+
 function GrowingFlowers:toggleSettings()
   local levelRangeText = getglobal("GrowingFlowers_LevelRange")
   local bottomBar = getglobal("GrowingFlowers_BottomBar")
@@ -227,12 +248,5 @@ function GrowingFlowers:toggleFrame()
     frame:Hide()
   else
     frame:Show()
-  end
-end
-
-function GrowingFlowers:registerSlashCommands()
-  SLASH_GROWINGFLOWERS1, SLASH_GROWINGFLOWERS2 = '/gftoggle', '/GrowingFlowerstoggle'
-  function SlashCmdList.GROWINGFLOWERS(msg, editbox)
-    GrowingFlowers:toggleFrame()
   end
 end

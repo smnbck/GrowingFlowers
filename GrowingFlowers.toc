@@ -4,7 +4,7 @@
 ## Notes: Handy frame for displaying the leveling guides made by Brian Kopp and Joana
 ## Notes-deDE: Ein schnieckes Fensterchen das die Leveling Guides von Brian Kopp und Joana anzeigt
 ## Version: 0.1
-## SavedVariablesPerCharacter: gfCurrentInstructionID
+## SavedVariablesPerCharacter: gfCurrentInstructionFileID, gfCurrentInstructionID
 
 GrowingFlowers_Inst_Nightelfs.lua
 GrowingFlowers_Inst_Alliance_17_21.lua

@@ -4,6 +4,7 @@ GrowingFlowers = {};
 
 local GrowingFlowers_Frame
 local currentInstructionID = 1
+local currentInstructionFileID = 1
 local instructionsFile
 local instructions = {}
 local instructionsTitle = ""
@@ -29,12 +30,20 @@ function GrowingFlowers:OnEvent(event)
       gfCurrentInstructionID = 1;
     end
 
+    if gfCurrentInstructionFileID == nil then
+      gfCurrentInstructionFileID = 1;
+    end
+
     currentInstructionID = gfCurrentInstructionID
+    currentInstructionFileID = gfCurrentInstructionFileID
+
     GrowingFlowers:initInstructionTexts()
-    DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers loaded! Current ID is " .. currentInstructionID);
+
+    DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers loaded! File ID = " .. currentInstructionFileID .. ", Instruction ID = " .. currentInstructionID);
 
   elseif (event == "PLAYER_LOGOUT") then
     gfCurrentInstructionID = currentInstructionID
+    gfCurrentInstructionFileID = currentInstructionFileID
   end
 end
 
@@ -62,8 +71,11 @@ function GrowingFlowers:configureTexts()
 end
 
 function GrowingFlowers:initInstructionTexts()
+
+  -- TODO: implement loading of correct files by using the fileID
   -- instructions = GrowingFlowers_Inst_Nightelfs:getInstructions()
   instructionsFile = GrowingFlowers_Inst_Alliance_17_21
+
   instructions = instructionsFile:getInstructions()
   GrowingFlowers:switchInstructionButtonPressed("none")
 end

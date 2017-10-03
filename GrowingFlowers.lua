@@ -178,6 +178,7 @@ function GrowingFlowers:addNextButton()
 end
 
 function GrowingFlowers:toggleSettings()
+  local levelRangeText = getglobal("GrowingFlowers_LevelRange")
   local bottomBar = getglobal("GrowingFlowers_BottomBar")
   local previousInstructionText = getglobal("GrowingFlowers_PreviousInstruction")
   local currentInstructionText = getglobal("GrowingFlowers_CurrentInstruction")
@@ -188,6 +189,12 @@ function GrowingFlowers:toggleSettings()
     previousInstructionText,
     currentInstructionText,
     nextInstructionText}
+
+    if levelRangeText:GetText() == "Settings" then
+      levelRangeText:SetText(instructionsTitle)
+    else
+      levelRangeText:SetText("Settings")
+    end
 
     for i, button in buttons do
       if button:IsShown() then

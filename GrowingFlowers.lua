@@ -14,7 +14,11 @@ local closeButton
 local previousButton
 local nextButton
 
+local settingsContainerFrame
 local settingsScrollFrame
+local settingsScrollBar
+local settingsScrollChild
+local instructionSelectionButtons = {}
 
 
 -- Functions
@@ -93,7 +97,8 @@ end
 function GrowingFlowers:initInstructionTexts()
 
   instructionsFile = GrowingFlowers_FileManager:getFileWithID(gfCurrentInstructionFileID)
-  instructionsFile = GrowingFlowers_FileManager:getFileWithID(201)
+  -- instructionsFile = GrowingFlowers_FileManager:getFileWithID(2) just for having fun while this shit is not finished
+
 
   instructions = instructionsFile:getInstructions()
   GrowingFlowers:switchInstructionButtonPressed("none")
@@ -166,24 +171,91 @@ function GrowingFlowers:addNextButton()
 end
 
 function GrowingFlowers:addSettingsScrollFrame()
-  settingsScrollFrame = CreateFrame("ScrollFrame", Settings_ScrollFrame, GrowingFlowers_Frame)
-  settingsScrollFrame:Hide()
-  settingsScrollFrame:SetPoint("LEFT", 0, 0)
-  settingsScrollFrame:SetPoint("RIGHT", 0, 0)
-  settingsScrollFrame:SetPoint("BOTTOM", 0, 0)
-	settingsScrollFrame:SetHeight(236)
-
-  local texture = settingsScrollFrame:CreateTexture()
+  --parent frame
+  settingsContainerFrame = CreateFrame("Frame", "SettingsContainerFrame", GrowingFlowers_Frame)
+  settingsContainerFrame:Hide()
+  settingsContainerFrame:SetPoint("TOPLEFT", 0, -24)
+  settingsContainerFrame:SetPoint("BOTTOMRIGHT", 0, 0)
+  local texture = settingsContainerFrame:CreateTexture()
   texture:SetAllPoints()
   texture:SetTexture(1,1,1,1)
-  settingsScrollFrame.background = texture
+  settingsContainerFrame.background = texture
 
-  -- generateInstructionSelectionRows()
+  --scrollframe
+  settingsScrollFrame = CreateFrame("ScrollFrame", nil, settingsContainerFrame)
+  settingsScrollFrame:SetPoint("TOPLEFT", 0, 0)
+  settingsScrollFrame:SetPoint("BOTTOMRIGHT", -16, 0)
+  local texture = settingsScrollFrame:CreateTexture()
+  texture:SetAllPoints()
+  texture:SetTexture(.5,.5,.5,1)
+  settingsContainerFrame.scrollframe = settingsScrollFrame
+
+  --scrollbar
+  settingsScrollBar = CreateFrame("Slider", nil, settingsScrollFrame, "UIPanelScrollBarTemplate")
+  settingsScrollBar:SetPoint("TOPLEFT", settingsContainerFrame, "TOPRIGHT", -16, -16)
+  settingsScrollBar:SetPoint("BOTTOMLEFT", settingsContainerFrame, "BOTTOMRIGHT", -16, 16)
+  settingsScrollBar:SetMinMaxValues(1, 200)
+  settingsScrollBar:SetValueStep(1)
+  settingsScrollBar.scrollStep = 1
+  settingsScrollBar:SetValue(0)
+  settingsScrollBar:SetWidth(16)
+  settingsScrollBar:SetScript("OnValueChanged",
+    function (self, value)
+      settingsScrollFrame:SetVerticalScroll(settingsScrollBar:GetValue())
+      DEFAULT_CHAT_FRAME:AddMessage("scrolled" .. settingsScrollBar:GetValue())
+    end
+  )
+  local scrollbg = settingsScrollBar:CreateTexture(nil, "BACKGROUND")
+  scrollbg:SetAllPoints(settingsScrollBar)
+  scrollbg:SetTexture(0, 0, 0, 0.4)
+  settingsContainerFrame.scrollbar = settingsScrollBar
+
+  --content frame
+  settingsScrollChild = CreateFrame("Frame", nil, settingsScrollFrame)
+  settingsScrollChild:SetHeight(400)
+  settingsScrollChild:SetWidth(128)
+  local texture = settingsScrollChild:CreateTexture()
+  texture:SetAllPoints()
+  texture:SetTexture(1,1,1,1)
+  settingsScrollChild.texture = texture
+  settingsScrollFrame.content = settingsScrollChild
+
+  settingsScrollFrame:SetScrollChild(settingsScrollChild)
 end
 
--- local function generateInstructionSelectionRows()
---   local files = GrowingFlowers_FileManager:getAllFiles()
--- end
+function scroll()
+
+end
+
+function GrowingFlowers:generateInstructionSelectionRows()
+  local files = GrowingFlowers_FileManager:getAllFiles()
+  for i, file in files do
+    GrowingFlowers:addInstructionSelectionButton(i)
+  end
+end
+
+function GrowingFlowers:addInstructionSelectionButton(index)
+  DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers loaded! File ID = " .. currentInstructionFileID .. ", Instruction ID = " .. currentInstructionID);
+  buttonName = "InstructionSelectionButton" .. index
+  local selectionButton = CreateFrame("Button", buttonName, Settings_ScrollFrame)
+  selectionButton:SetPoint("TOP", 0, -8)
+	selectionButton:SetPoint("RIGHT", -8, 0)
+  selectionButton:SetPoint("LEFT", 8, 0)
+	selectionButton:SetHeight(20)
+
+	selectionButton:SetText("TEST " .. index)
+  selectionButton:SetFont("Fonts\\ARIALN.TTF", 12)
+
+  selectionButton:SetScript("OnClick", function(self, arg1)
+    GrowingFlowers:switchInstructionButtonPressed("next")
+  end)
+
+  instructionSelectionButtons[buttonName] = selectionButton
+end
+
+function GrowingFlowers:InstructionSelectionButtonPressed()
+
+end
 
 function GrowingFlowers:addSelectInstructionsButton()
   nextButton = CreateFrame("Button", GrowingFlowers_NextButton, GrowingFlowers_Frame)
@@ -267,10 +339,10 @@ function GrowingFlowers:toggleSettings()
 
     if levelRangeText:GetText() == "Settings" then
       levelRangeText:SetText(instructionsTitle)
-      settingsScrollFrame:Hide()
+      settingsContainerFrame:Hide()
     else
       levelRangeText:SetText("Settings")
-      settingsScrollFrame:Show()
+      settingsContainerFrame:Show()
     end
 
     for i, button in buttons do

@@ -1,9 +1,9 @@
 
 GrowingFlowers_Inst_Alliance_1 = {};
 
-local fileID = 1
+local fileID = "id_1"
 
-local instructionsTitle = "Alliance Part " .. fileID .. " - Level 12 to 17"
+local instructionsTitle = "Alliance Part 1 - Level 12 to 17"
 
 local race = "Alliance"
 
@@ -86,6 +86,10 @@ local instructions = {
   { text="Do “Fruit of the Sea” from crawlers around here.", minLvl="12", maxLvl="17" }
 
 }
+
+function GrowingFlowers_Inst_Alliance_1:getFileID()
+  return fileID
+end
 
 function GrowingFlowers_Inst_Alliance_1:getInstructions()
   return instructions

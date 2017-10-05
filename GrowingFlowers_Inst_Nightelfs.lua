@@ -1,7 +1,7 @@
 
 GrowingFlowers_Inst_Nightelfs = {};
 
-local fileID = 201
+local fileID = "id_201"
 
 local instructionsTitle = "Nightelfs - Level 1 to 12"
 
@@ -102,6 +102,10 @@ local instructions = {
   { text="Run straight ahead to 56,92, hand in “Nessa Shadowsong” accept “The Bounty of Teldrassil” go hand it in to the hippograph guy at 58,93 to get a free ride and start “Flight to Auberdine”", minLvl="1", maxLvl="12" },
 
 }
+
+function GrowingFlowers_Inst_Nightelfs:getFileID()
+  return fileID
+end
 
 function GrowingFlowers_Inst_Nightelfs:getInstructions()
   return instructions

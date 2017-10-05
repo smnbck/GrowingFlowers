@@ -1,9 +1,9 @@
 
 GrowingFlowers_Inst_Alliance_2 = {};
 
-local fileID = 2
+local fileID = "id_2"
 
-local instructionsTitle = "Alliance Part " .. fileID .. " - Level 17 to 21"
+local instructionsTitle = "Alliance Part 2 - Level 17 to 21"
 
 local race = "Alliance"
 
@@ -80,6 +80,10 @@ local instructions = {
   { text="Turn in “The Absent Minded Prospector pt.1” at 35,83 accept “The Absent Minded Prospector pt.2” and do it.", minLvl="20", maxLvl="21" }
 
 }
+
+function GrowingFlowers_Inst_Alliance_2:getFileID()
+  return fileID
+end
 
 function GrowingFlowers_Inst_Alliance_2:getInstructions()
   return instructions

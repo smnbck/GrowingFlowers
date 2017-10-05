@@ -35,7 +35,7 @@ function GrowingFlowers:OnEvent(this, event, arg1)
     end
 
     if gfCurrentInstructionFileID == nil then
-      gfCurrentInstructionFileID = 1;
+      gfCurrentInstructionFileID = "id_1";
     end
 
     currentInstructionID = gfCurrentInstructionID
@@ -47,7 +47,7 @@ function GrowingFlowers:OnEvent(this, event, arg1)
 
   elseif (event == "PLAYER_LOGOUT") then
     gfCurrentInstructionID = currentInstructionID
-    gfCurrentInstructionFileID = xurrentInstructionFileID
+    gfCurrentInstructionFileID = currentInstructionFileID
   end
 end
 
@@ -95,10 +95,8 @@ function GrowingFlowers:configureTexts()
 end
 
 function GrowingFlowers:initInstructionTexts()
-
-  instructionsFile = GrowingFlowers_FileManager:getFileWithID(gfCurrentInstructionFileID)
+  instructionsFile = GrowingFlowers_FileManager:getFileWithID(currentInstructionFileID)
   -- instructionsFile = GrowingFlowers_FileManager:getFileWithID(2) just for having fun while this shit is not finished
-
 
   instructions = instructionsFile:getInstructions()
   GrowingFlowers:switchInstructionButtonPressed("none")
@@ -176,33 +174,26 @@ function GrowingFlowers:addSettingsScrollFrame()
   settingsContainerFrame:Hide()
   settingsContainerFrame:SetPoint("TOPLEFT", 0, -24)
   settingsContainerFrame:SetPoint("BOTTOMRIGHT", 0, 0)
-  local texture = settingsContainerFrame:CreateTexture()
-  texture:SetAllPoints()
-  texture:SetTexture(1,1,1,1)
-  settingsContainerFrame.background = texture
 
   --scrollframe
   settingsScrollFrame = CreateFrame("ScrollFrame", nil, settingsContainerFrame)
   settingsScrollFrame:SetPoint("TOPLEFT", 0, 0)
   settingsScrollFrame:SetPoint("BOTTOMRIGHT", -16, 0)
-  local texture = settingsScrollFrame:CreateTexture()
-  texture:SetAllPoints()
-  texture:SetTexture(.5,.5,.5,1)
   settingsContainerFrame.scrollframe = settingsScrollFrame
 
   --scrollbar
   settingsScrollBar = CreateFrame("Slider", nil, settingsScrollFrame, "UIPanelScrollBarTemplate")
   settingsScrollBar:SetPoint("TOPLEFT", settingsContainerFrame, "TOPRIGHT", -16, -16)
   settingsScrollBar:SetPoint("BOTTOMLEFT", settingsContainerFrame, "BOTTOMRIGHT", -16, 16)
-  settingsScrollBar:SetMinMaxValues(1, 200)
+  GrowingFlowers:adjustSettingsScrollBarMaxValue(1)
   settingsScrollBar:SetValueStep(1)
   settingsScrollBar.scrollStep = 1
   settingsScrollBar:SetValue(0)
   settingsScrollBar:SetWidth(16)
   settingsScrollBar:SetScript("OnValueChanged",
     function (self, value)
+      DEFAULT_CHAT_FRAME:AddMessage(settingsScrollBar:GetValue());
       settingsScrollFrame:SetVerticalScroll(settingsScrollBar:GetValue())
-      DEFAULT_CHAT_FRAME:AddMessage("scrolled" .. settingsScrollBar:GetValue())
     end
   )
   local scrollbg = settingsScrollBar:CreateTexture(nil, "BACKGROUND")
@@ -212,49 +203,73 @@ function GrowingFlowers:addSettingsScrollFrame()
 
   --content frame
   settingsScrollChild = CreateFrame("Frame", nil, settingsScrollFrame)
-  settingsScrollChild:SetHeight(400)
-  settingsScrollChild:SetWidth(128)
-  local texture = settingsScrollChild:CreateTexture()
-  texture:SetAllPoints()
-  texture:SetTexture(1,1,1,1)
-  settingsScrollChild.texture = texture
+  settingsScrollChild:SetHeight(settingsContainerFrame:GetHeight())
+  settingsScrollChild:SetWidth(224)
   settingsScrollFrame.content = settingsScrollChild
 
   settingsScrollFrame:SetScrollChild(settingsScrollChild)
+
+  GrowingFlowers:generateInstructionSelectionRows()
+  settingsScrollBar:SetValue(1)
 end
 
-function scroll()
-
+function GrowingFlowers:adjustSettingsScrollBarMaxValue(maxValue)
+  if maxValue > 1 then
+    settingsScrollBar:Show()
+    settingsScrollBar:SetMinMaxValues(1, maxValue)
+  else
+    settingsScrollBar:Hide()
+  end
 end
 
 function GrowingFlowers:generateInstructionSelectionRows()
   local files = GrowingFlowers_FileManager:getAllFiles()
+  local scrollChildHeight = 8
+
+  local j = 0
   for i, file in files do
-    GrowingFlowers:addInstructionSelectionButton(i)
+    GrowingFlowers:addInstructionSelectionButton(j, GrowingFlowers_FileManager:getFileWithID(i))
+    scrollChildHeight = scrollChildHeight + 20
+    j = j + 1
   end
+
+  if scrollChildHeight > settingsContainerFrame:GetHeight() then
+    settingsScrollChild:SetHeight(scrollChildHeight + 8)
+  else
+    settingsScrollChild:SetHeight(settingsContainerFrame:GetHeight())
+  end
+
+  GrowingFlowers:adjustSettingsScrollBarMaxValue(settingsScrollChild:GetHeight() - settingsContainerFrame:GetHeight())
 end
 
-function GrowingFlowers:addInstructionSelectionButton(index)
-  DEFAULT_CHAT_FRAME:AddMessage("GrowingFlowers loaded! File ID = " .. currentInstructionFileID .. ", Instruction ID = " .. currentInstructionID);
+function GrowingFlowers:addInstructionSelectionButton(index, file)
+  local instructionsTitle = file:getInstructionsTitle()
+
   buttonName = "InstructionSelectionButton" .. index
-  local selectionButton = CreateFrame("Button", buttonName, Settings_ScrollFrame)
-  selectionButton:SetPoint("TOP", 0, -8)
+  local selectionButton = CreateFrame("Button", buttonName, settingsScrollChild)
+
+  local topPadding = (index * -20) - 8
+
+  selectionButton:SetPoint("TOP", 0, topPadding)
 	selectionButton:SetPoint("RIGHT", -8, 0)
   selectionButton:SetPoint("LEFT", 8, 0)
 	selectionButton:SetHeight(20)
 
-	selectionButton:SetText("TEST " .. index)
+	selectionButton:SetText(instructionsTitle)
   selectionButton:SetFont("Fonts\\ARIALN.TTF", 12)
 
   selectionButton:SetScript("OnClick", function(self, arg1)
-    GrowingFlowers:switchInstructionButtonPressed("next")
+    GrowingFlowers:InstructionSelectionButtonPressed(file)
   end)
 
   instructionSelectionButtons[buttonName] = selectionButton
 end
 
-function GrowingFlowers:InstructionSelectionButtonPressed()
-
+function GrowingFlowers:InstructionSelectionButtonPressed(file)
+  DEFAULT_CHAT_FRAME:AddMessage("fileid = " .. file:getFileID());
+  currentInstructionFileID = file:getFileID()
+  GrowingFlowers:toggleSettings()
+  GrowingFlowers:initInstructionTexts()
 end
 
 function GrowingFlowers:addSelectInstructionsButton()

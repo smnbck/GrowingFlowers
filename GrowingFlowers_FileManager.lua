@@ -9,10 +9,17 @@ local files = {
   id_201 = GrowingFlowers_Inst_Nightelfs
 }
 
+-- you need to pass the actual id (eg. for id_1 a 1)
+function GrowingFlowers_FileManager:getFileWithID(idString)
+  -- local fileID = "id_" .. id
+  -- local file = files[fileID]
+  local file = files[idString]
+  return file
+end
 
-function GrowingFlowers_FileManager:getFileWithID(id)
-  local fileID = "id_" .. id
-  local file = files[fileID]
+-- you can use this function to iterate through it with an index
+function GrowingFlowers_FileManager:getFileWithIndex(index)
+  local file = files[index]
   return file
 end
 

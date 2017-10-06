@@ -192,7 +192,6 @@ function GrowingFlowers:addSettingsScrollFrame()
   settingsScrollBar:SetWidth(16)
   settingsScrollBar:SetScript("OnValueChanged",
     function (self, value)
-      DEFAULT_CHAT_FRAME:AddMessage(settingsScrollBar:GetValue());
       settingsScrollFrame:SetVerticalScroll(settingsScrollBar:GetValue())
     end
   )
@@ -240,10 +239,11 @@ function GrowingFlowers:generateInstructionSelectionRows()
   end
 
   GrowingFlowers:adjustSettingsScrollBarMaxValue(settingsScrollChild:GetHeight() - settingsContainerFrame:GetHeight())
+  GrowingFlowers:highlightSelectedInstructionFile()
 end
 
 function GrowingFlowers:addInstructionSelectionButton(index, file)
-  local instructionsTitle = file:getInstructionsTitle()
+  local title = file:getInstructionsTitle()
 
   buttonName = "InstructionSelectionButton" .. index
   local selectionButton = CreateFrame("Button", buttonName, settingsScrollChild)
@@ -255,8 +255,10 @@ function GrowingFlowers:addInstructionSelectionButton(index, file)
   selectionButton:SetPoint("LEFT", 8, 0)
 	selectionButton:SetHeight(20)
 
-	selectionButton:SetText(instructionsTitle)
+	selectionButton:SetText(title)
   selectionButton:SetFont("Fonts\\ARIALN.TTF", 12)
+
+  selectionButton.id = file:getFileID()
 
   selectionButton:SetScript("OnClick", function(self, arg1)
     GrowingFlowers:InstructionSelectionButtonPressed(file)
@@ -265,11 +267,22 @@ function GrowingFlowers:addInstructionSelectionButton(index, file)
   instructionSelectionButtons[buttonName] = selectionButton
 end
 
+function GrowingFlowers:highlightSelectedInstructionFile()
+  for i, selectionButton in instructionSelectionButtons do
+    if selectionButton.id == currentInstructionFileID then
+      selectionButton:SetTextColor(1, 0.76, 0.24, 1)
+    else
+      selectionButton:SetTextColor(1, 1, 1, 1)
+    end
+  end
+end
+
 function GrowingFlowers:InstructionSelectionButtonPressed(file)
   DEFAULT_CHAT_FRAME:AddMessage("fileid = " .. file:getFileID());
   currentInstructionFileID = file:getFileID()
   GrowingFlowers:toggleSettings()
   GrowingFlowers:initInstructionTexts()
+  GrowingFlowers:highlightSelectedInstructionFile()
 end
 
 function GrowingFlowers:addSelectInstructionsButton()
@@ -293,7 +306,6 @@ function GrowingFlowers:registerSlashCommands()
     GrowingFlowers:toggleFrame()
   end
 end
-
 
 -- Button Functions
 function GrowingFlowers:switchInstructionButtonPressed(direction)

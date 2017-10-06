@@ -320,7 +320,7 @@ function GrowingFlowers:switchInstructionButtonPressed(direction)
   local nextInstructionText = getglobal("GrowingFlowers_NextInstruction")
 
   if instructions[currentInstructionID-1] ~= nil then
-    previousInstructionText:SetText(instructions[currentInstructionID-1].text)
+    previousInstructionText:SetText(currentInstructionID - 1 .. ") " .. instructions[currentInstructionID-1].text)
     previousButton:SetAlpha(1)
     previousButton:Enable()
   else
@@ -330,13 +330,13 @@ function GrowingFlowers:switchInstructionButtonPressed(direction)
   end
 
   if instructions[currentInstructionID] ~= nil then
-    currentInstructionText:SetText(instructions[currentInstructionID].text)
+    currentInstructionText:SetText(currentInstructionID .. ") " .. instructions[currentInstructionID].text)
   else
     currentInstructionText:SetText("")
   end
 
   if instructions[currentInstructionID+1] ~= nil then
-    nextInstructionText:SetText(instructions[currentInstructionID+1].text)
+    nextInstructionText:SetText( currentInstructionID + 1 .. ") " .. instructions[currentInstructionID+1].text)
     nextButton:SetAlpha(1)
     nextButton:Enable()
    else

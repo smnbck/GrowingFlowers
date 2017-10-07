@@ -25,18 +25,19 @@ local instructionSelectionButtons = {}
 function GrowingFlowers:registerEvents()
   GrowingFlowers_Frame = getglobal("GrowingFlowers_Frame")
   GrowingFlowers_Frame:RegisterEvent("ADDON_LOADED")
-  GrowingFlowers_Frame:RegisterEvent("PLAYER_LOGOUT");
+  GrowingFlowers_Frame:RegisterEvent("PLAYER_LOGOUT")
 end
 
 function GrowingFlowers:OnEvent(this, event, arg1)
 	if (arg1 == "GrowingFlowers" and event == "ADDON_LOADED") then
     if gfCurrentInstructionID == nil then
-      gfCurrentInstructionID = 1;
+      gfCurrentInstructionID = 1
     end
 
-    if gfCurrentInstructionFileID == nil then
-      gfCurrentInstructionFileID = "id_1";
-    end
+    GrowingFlowers:setActiveFaction()
+    -- if gfCurrentInstructionFileID == nil then
+    --   gfCurrentInstructionFileID = "id_1"
+    -- end
 
     currentInstructionID = gfCurrentInstructionID
     currentInstructionFileID = gfCurrentInstructionFileID
@@ -64,8 +65,8 @@ function GrowingFlowers:init()
 
   GrowingFlowers:configureTexts()
 
+  -- data stuff begins here
   GrowingFlowers:initInstructionTexts()
-
   GrowingFlowers:registerSlashCommands()
 end
 
@@ -94,12 +95,33 @@ function GrowingFlowers:configureTexts()
   currentInstructionText:SetTextColor(1, 0.76, 0.24, 1)
 end
 
+function GrowingFlowers:setActiveFaction()
+  local name, id = UnitRace("player")
+  DEFAULT_CHAT_FRAME:AddMessage("race = " .. name .. id);
+
+  if id == "NightElf" or id == "Human" or id == "Dwarf" or id == "Gnome" then
+    GrowingFlowers_FileManager:setActiveFaction("alliance")
+  else
+    GrowingFlowers_FileManager:setActiveFaction("horde")
+  end
+
+  if gfCurrentInstructionFileID == nil then
+    if id == "NightElf" or id == "Undead" then
+      gfCurrentInstructionFileID = "id_201"
+    elseif id == "Human" or id == "Tauren" then
+      gfCurrentInstructionFileID = "id_202"
+    elseif id == "Dwarf" or id == "Gnome" or id == "Orc" or id == "Troll" then
+      gfCurrentInstructionFileID = "id_203"
+    end
+  end
+end
+
 function GrowingFlowers:initInstructionTexts()
   instructionsFile = GrowingFlowers_FileManager:getFileWithID(currentInstructionFileID)
-  -- instructionsFile = GrowingFlowers_FileManager:getFileWithID(2) just for having fun while this shit is not finished
-
-  instructions = instructionsFile:getInstructions()
-  GrowingFlowers:switchInstructionButtonPressed("none")
+  if instructionsFile ~= nil then
+    instructions = instructionsFile:getInstructions()
+    GrowingFlowers:switchInstructionButtonPressed("none")
+  end
 end
 
 function GrowingFlowers:addSettingsButton()
@@ -278,7 +300,6 @@ function GrowingFlowers:highlightSelectedInstructionFile()
 end
 
 function GrowingFlowers:InstructionSelectionButtonPressed(file)
-  DEFAULT_CHAT_FRAME:AddMessage("fileid = " .. file:getFileID());
   currentInstructionFileID = file:getFileID()
   GrowingFlowers:toggleSettings()
   GrowingFlowers:initInstructionTexts()

@@ -25,18 +25,19 @@ local instructionSelectionButtons = {}
 function GrowingFlowers:registerEvents()
   GrowingFlowers_Frame = getglobal("GrowingFlowers_Frame")
   GrowingFlowers_Frame:RegisterEvent("ADDON_LOADED")
-  GrowingFlowers_Frame:RegisterEvent("PLAYER_LOGOUT");
+  GrowingFlowers_Frame:RegisterEvent("PLAYER_LOGOUT")
 end
 
 function GrowingFlowers:OnEvent(this, event, arg1)
 	if (arg1 == "GrowingFlowers" and event == "ADDON_LOADED") then
     if gfCurrentInstructionID == nil then
-      gfCurrentInstructionID = 1;
+      gfCurrentInstructionID = 1
     end
 
-    if gfCurrentInstructionFileID == nil then
-      gfCurrentInstructionFileID = "id_1";
-    end
+    GrowingFlowers:setActiveFaction()
+    -- if gfCurrentInstructionFileID == nil then
+    --   gfCurrentInstructionFileID = "id_1"
+    -- end
 
     currentInstructionID = gfCurrentInstructionID
     currentInstructionFileID = gfCurrentInstructionFileID
@@ -64,8 +65,8 @@ function GrowingFlowers:init()
 
   GrowingFlowers:configureTexts()
 
+  -- data stuff begins here
   GrowingFlowers:initInstructionTexts()
-
   GrowingFlowers:registerSlashCommands()
 end
 
@@ -94,12 +95,33 @@ function GrowingFlowers:configureTexts()
   currentInstructionText:SetTextColor(1, 0.76, 0.24, 1)
 end
 
+function GrowingFlowers:setActiveFaction()
+  local name, id = UnitRace("player")
+  DEFAULT_CHAT_FRAME:AddMessage("race = " .. name .. id);
+
+  if id == "NightElf" or id == "Human" or id == "Dwarf" or id == "Gnome" then
+    GrowingFlowers_FileManager:setActiveFaction("alliance")
+  else
+    GrowingFlowers_FileManager:setActiveFaction("horde")
+  end
+
+  if gfCurrentInstructionFileID == nil then
+    if id == "NightElf" or id == "Undead" then
+      gfCurrentInstructionFileID = "id_201"
+    elseif id == "Human" or id == "Tauren" then
+      gfCurrentInstructionFileID = "id_202"
+    elseif id == "Dwarf" or id == "Gnome" or id == "Orc" or id == "Troll" then
+      gfCurrentInstructionFileID = "id_203"
+    end
+  end
+end
+
 function GrowingFlowers:initInstructionTexts()
   instructionsFile = GrowingFlowers_FileManager:getFileWithID(currentInstructionFileID)
-  -- instructionsFile = GrowingFlowers_FileManager:getFileWithID(2) just for having fun while this shit is not finished
-
-  instructions = instructionsFile:getInstructions()
-  GrowingFlowers:switchInstructionButtonPressed("none")
+  if instructionsFile ~= nil then
+    instructions = instructionsFile:getInstructions()
+    GrowingFlowers:switchInstructionButtonPressed("none")
+  end
 end
 
 function GrowingFlowers:addSettingsButton()
@@ -192,7 +214,6 @@ function GrowingFlowers:addSettingsScrollFrame()
   settingsScrollBar:SetWidth(16)
   settingsScrollBar:SetScript("OnValueChanged",
     function (self, value)
-      DEFAULT_CHAT_FRAME:AddMessage(settingsScrollBar:GetValue());
       settingsScrollFrame:SetVerticalScroll(settingsScrollBar:GetValue())
     end
   )
@@ -240,10 +261,11 @@ function GrowingFlowers:generateInstructionSelectionRows()
   end
 
   GrowingFlowers:adjustSettingsScrollBarMaxValue(settingsScrollChild:GetHeight() - settingsContainerFrame:GetHeight())
+  GrowingFlowers:highlightSelectedInstructionFile()
 end
 
 function GrowingFlowers:addInstructionSelectionButton(index, file)
-  local instructionsTitle = file:getInstructionsTitle()
+  local title = file:getInstructionsTitle()
 
   buttonName = "InstructionSelectionButton" .. index
   local selectionButton = CreateFrame("Button", buttonName, settingsScrollChild)
@@ -255,8 +277,10 @@ function GrowingFlowers:addInstructionSelectionButton(index, file)
   selectionButton:SetPoint("LEFT", 8, 0)
 	selectionButton:SetHeight(20)
 
-	selectionButton:SetText(instructionsTitle)
+	selectionButton:SetText(title)
   selectionButton:SetFont("Fonts\\ARIALN.TTF", 12)
+
+  selectionButton.id = file:getFileID()
 
   selectionButton:SetScript("OnClick", function(self, arg1)
     GrowingFlowers:InstructionSelectionButtonPressed(file)
@@ -265,11 +289,21 @@ function GrowingFlowers:addInstructionSelectionButton(index, file)
   instructionSelectionButtons[buttonName] = selectionButton
 end
 
+function GrowingFlowers:highlightSelectedInstructionFile()
+  for i, selectionButton in instructionSelectionButtons do
+    if selectionButton.id == currentInstructionFileID then
+      selectionButton:SetTextColor(1, 0.76, 0.24, 1)
+    else
+      selectionButton:SetTextColor(1, 1, 1, 1)
+    end
+  end
+end
+
 function GrowingFlowers:InstructionSelectionButtonPressed(file)
-  DEFAULT_CHAT_FRAME:AddMessage("fileid = " .. file:getFileID());
   currentInstructionFileID = file:getFileID()
   GrowingFlowers:toggleSettings()
   GrowingFlowers:initInstructionTexts()
+  GrowingFlowers:highlightSelectedInstructionFile()
 end
 
 function GrowingFlowers:addSelectInstructionsButton()
@@ -294,7 +328,6 @@ function GrowingFlowers:registerSlashCommands()
   end
 end
 
-
 -- Button Functions
 function GrowingFlowers:switchInstructionButtonPressed(direction)
   if direction == "previous" then
@@ -308,7 +341,7 @@ function GrowingFlowers:switchInstructionButtonPressed(direction)
   local nextInstructionText = getglobal("GrowingFlowers_NextInstruction")
 
   if instructions[currentInstructionID-1] ~= nil then
-    previousInstructionText:SetText(instructions[currentInstructionID-1].text)
+    previousInstructionText:SetText(currentInstructionID - 1 .. ") " .. instructions[currentInstructionID-1].text)
     previousButton:SetAlpha(1)
     previousButton:Enable()
   else
@@ -318,13 +351,13 @@ function GrowingFlowers:switchInstructionButtonPressed(direction)
   end
 
   if instructions[currentInstructionID] ~= nil then
-    currentInstructionText:SetText(instructions[currentInstructionID].text)
+    currentInstructionText:SetText(currentInstructionID .. ") " .. instructions[currentInstructionID].text)
   else
     currentInstructionText:SetText("")
   end
 
   if instructions[currentInstructionID+1] ~= nil then
-    nextInstructionText:SetText(instructions[currentInstructionID+1].text)
+    nextInstructionText:SetText( currentInstructionID + 1 .. ") " .. instructions[currentInstructionID+1].text)
     nextButton:SetAlpha(1)
     nextButton:Enable()
    else

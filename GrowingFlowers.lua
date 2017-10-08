@@ -100,6 +100,7 @@ function GrowingFlowers:setActiveFaction()
   DEFAULT_CHAT_FRAME:AddMessage("race = " .. name .. id);
 
   if id == "NightElf" or id == "Human" or id == "Dwarf" or id == "Gnome" then
+    DEFAULT_CHAT_FRAME:AddMessage("race = " .. name .. id);
     GrowingFlowers_FileManager:setActiveFaction("alliance")
   else
     GrowingFlowers_FileManager:setActiveFaction("horde")

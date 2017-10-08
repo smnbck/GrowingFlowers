@@ -7,6 +7,7 @@
 ## SavedVariablesPerCharacter: gfCurrentInstructionFileID, gfCurrentInstructionID
 
 GrowingFlowers_Inst_Nightelfs.lua
+GrowingFlowers_Inst_Humans.lua
 
 GrowingFlowers_Inst_Alliance_1.lua
 GrowingFlowers_Inst_Alliance_2.lua
